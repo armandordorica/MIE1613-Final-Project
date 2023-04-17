@@ -3,6 +3,44 @@ import pandas as pd
 import numpy as np
 
 
+def historical_var(returns, confidence_level=0.95):
+    """
+    Calculate historical Value at Risk (VaR) for a given confidence level.
+    
+    Parameters:
+    - returns (pandas.Series): Historical returns of the investment.
+    - confidence_level (float): The confidence level for VaR calculation (e.g., 0.95 for 95% confidence).
+    
+    Returns:
+    - var (float): The historical Value at Risk.
+    """
+    if not isinstance(returns, pd.Series):
+        returns = pd.Series(returns)
+        
+    var = -np.percentile(returns, 100 * (1 - confidence_level))
+    
+    return var
+
+def historical_cvar(returns, confidence_level=0.95):
+    """
+    Calculate historical Conditional Value at Risk (CVaR) for a given confidence level.
+    
+    Parameters:
+    - returns (pandas.Series): Historical returns of the investment.
+    - confidence_level (float): The confidence level for CVaR calculation (e.g., 0.95 for 95% confidence).
+    
+    Returns:
+    - cvar (float): The historical Conditional Value at Risk.
+    """
+    if not isinstance(returns, pd.Series):
+        returns = pd.Series(returns)
+        
+    var = historical_var(returns, confidence_level)
+    cvar = -returns[returns < -var].mean()
+    
+    return cvar
+
+
 def get_return(input_df: pd.DataFrame, days_ago: int, most_recent_date: str) -> float:
     """
     Calculates the return over a specified number of days ending on a given date.

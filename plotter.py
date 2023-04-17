@@ -240,9 +240,9 @@ def plot_markowitz_bullet(x_vals, y_vals, text_vals, title='', xaxis_title='', y
         )
 
     fig.update_layout(
-        title='Annotated Scatter Plot Example',
-        xaxis_title='X Axis Title',
-        yaxis_title='Y Axis Title',
+        title=title,
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title,
         annotations=annotations
     )
 
