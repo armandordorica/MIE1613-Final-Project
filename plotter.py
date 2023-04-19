@@ -213,7 +213,7 @@ def plotly_multiline_plot(x_vals, y_vals_dict, title, fig_width=800, fig_height=
     
     
 
-def plot_markowitz_bullet(x_vals, y_vals, text_vals, title='', xaxis_title='', yaxis_title=''): 
+def plot_markowitz_bullet(x_vals, y_vals, text_vals, title='', xaxis_title='', yaxis_title='', height=500, width=700):
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
@@ -243,11 +243,14 @@ def plot_markowitz_bullet(x_vals, y_vals, text_vals, title='', xaxis_title='', y
         title=title,
         xaxis_title=xaxis_title,
         yaxis_title=yaxis_title,
-        annotations=annotations
+        annotations=annotations,
+        height=height,
+        width=width
     )
 
     # Show the plot
     fig.show()
+
     
 
 
@@ -293,5 +296,34 @@ def plot_column_across_tickers(input_df, col_name = 'Cumulative_Percentage_Chang
         y_data.append(list(temp_df[col_name]))
 
 
-    plot_multi_line_chart(x_data, y_data, labels=tickers, title=title)
+    plot_multi_line_chart(x_data, y_data, labels=tickers, title=title, xaxis_title=xaxis_title,yaxis_title=yaxis_title )
 
+
+    
+
+def multiline_plot(df, columns, labels=None):
+    """
+    Creates a multiline plot using Plotly.
+
+    Args:
+    df (pd.DataFrame): The input DataFrame.
+    columns (list): A list of column names to plot.
+    labels (list, optional): A list of labels corresponding to the columns. Default is None, in which case column names are used.
+
+    Returns:
+    plotly.graph_objects.Figure: The multiline plot figure.
+    """
+
+    if labels is None:
+        labels = columns
+
+    assert len(columns) == len(labels), "The number of columns and labels must be equal."
+
+    fig = go.Figure()
+
+    for col, label in zip(columns, labels):
+        fig.add_trace(go.Scatter(x=df.index, y=df[col], name=label, mode='lines'))
+
+    fig.update_layout(title='Multiline Plot', xaxis_title='Date', yaxis_title='Values')
+
+    return fig

@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import alpaca_trade_api as tradeapi
 from MCForecastTools import MCSimulation
+from scipy.stats import skew, kurtosis, chi2
 
 
 import matplotlib.pyplot as plt
@@ -53,7 +54,10 @@ class Stock:
         self.ticker_data = self.cumulative_mean()
         self.ticker_data =self.cumulative_variance()
         self.ticker_data =self.cumulative_std()
-
+        self.ticker_data =self.skew()
+        self.ticker_data =self.kurtosis()
+        self.ticker_data =self.jarque_bera_statistic()
+        self.ticker_data =self.jarque_bera_p_value()
     
     def get_ticker_data_alpaca(self):
          
@@ -134,3 +138,61 @@ class Stock:
         self.ticker_data['cumulative_std_normalized_close'] = self.ticker_data['normalized_close'].expanding().std(ddof=0)
 
         return self.ticker_data
+    
+    
+    def skew(self):
+        if 'pct_change' not in self.ticker_data.columns:
+            raise ValueError("DataFrame must have a 'pct_change' column")
+
+        self.ticker_data['skew'] = skew(self.ticker_data['pct_change'].iloc[1:])
+
+        return self.ticker_data
+    
+    
+    def kurtosis(self):
+        if 'pct_change' not in self.ticker_data.columns:
+            raise ValueError("DataFrame must have a 'pct_change' column")
+
+        self.ticker_data['kurtosis'] = kurtosis(self.ticker_data['pct_change'].iloc[1:])
+
+        return self.ticker_data
+    
+    
+    def jarque_bera_statistic(self):
+        
+        if 'pct_change' not in self.ticker_data.columns:
+            raise ValueError("DataFrame must have a 'pct_change' column")
+        # Calculate the number of observations (n)
+        n = len(self.ticker_data)
+
+        # Calculate the sample skewness (S) and kurtosis (K)
+        S = skew(self.ticker_data['pct_change'].iloc[1:])
+        K = kurtosis(self.ticker_data['pct_change'].iloc[1:], fisher=False)
+
+        # Compute the Jarque-Bera statistic
+        JB = n * (S**2 / 6 + (K - 3)**2 / 24)
+        
+        self.ticker_data['Jarque_Bera_stat'] = JB
+
+        return self.ticker_data
+    
+    def jarque_bera_p_value(self):
+        
+        if 'pct_change' not in self.ticker_data.columns:
+            raise ValueError("DataFrame must have a 'pct_change' column")
+        # Calculate the number of observations (n)
+        n = len(self.ticker_data)
+
+        # Calculate the sample skewness (S) and kurtosis (K)
+        S = skew(self.ticker_data['pct_change'].iloc[1:])
+        K = kurtosis(self.ticker_data['pct_change'].iloc[1:], fisher=False)
+
+        # Compute the Jarque-Bera statistic
+        JB = n * (S**2 / 6 + (K - 3)**2 / 24)
+        
+        p_value = chi2.sf(JB, 2)
+        self.ticker_data['Jarque_Bera_p_val'] = p_value
+
+        return self.ticker_data
+    
+    
