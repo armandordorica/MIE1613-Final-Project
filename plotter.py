@@ -6,6 +6,8 @@ import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 import numpy as np
+import plotly.offline as pyo
+    
 
 
 from datetime import datetime
@@ -325,5 +327,96 @@ def multiline_plot(df, columns, labels=None):
         fig.add_trace(go.Scatter(x=df.index, y=df[col], name=label, mode='lines'))
 
     fig.update_layout(title='Multiline Plot', xaxis_title='Date', yaxis_title='Values')
+
+    return fig
+
+
+
+
+def create_barplot(x, y, title='', x_title='', y_title='', width=800, height=500):
+    data = [go.Bar(x=x, y=y)]
+    layout = go.Layout(
+        title=title,
+        xaxis=dict(title=x_title),
+        yaxis=dict(title=y_title),
+        width=width,
+        height=height
+    )
+    fig = go.Figure(data=data, layout=layout)
+    pyo.iplot(fig)
+
+
+
+def create_scatterplot(x_values, y_values, marker_sizes, width=600, height=400, title=None, xaxis_title=None, yaxis_title=None):
+    # Create a dataframe from the x and y values
+    data = {'x': x_values, 'y': y_values, 'marker_size': marker_sizes}
+    df = pd.DataFrame(data)
+    
+    # Create the scatter plot
+    fig = px.scatter(df, x='x', y='y', size='marker_size')
+    
+    # Set optional parameters
+    fig.update_layout(
+        width=width,
+        height=height,
+        title=title,
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title
+    )
+    
+    return fig.show()
+
+
+def create_scatterplot_with_annotations(x_values, y_values, marker_sizes, width=600, height=400, title=None, xaxis_title=None, yaxis_title=None, annotations=None):
+    # Create a trace for the scatter plot
+    trace = go.Scatter(
+        x=x_values,
+        y=y_values,
+        mode='markers',
+        marker=dict(
+            size=marker_sizes
+        ),
+        text=annotations,
+        hovertemplate='x: %{x}<br>y: %{y}<br>size: %{marker.size}<extra>%{text}</extra>'
+    )
+    
+    # Create the layout for the plot
+    layout = go.Layout(
+        width=width,
+        height=height,
+        title=title,
+        xaxis=dict(title=xaxis_title),
+        yaxis=dict(title=yaxis_title),
+        hovermode='closest'
+    )
+    
+    # Create the figure and add the trace and layout
+    fig = go.Figure(data=[trace], layout=layout)
+    
+    return fig.show()
+
+
+
+def create_area_plot(optimal_weights, stock_labels, dates):
+    """
+    Creates an area plot for the optimal weights of each stock in a portfolio.
+
+    Parameters:
+    - optimal_weights: array of arrays containing the optimal weights of each stock over time.
+    - stock_labels: list of stock labels corresponding to the stocks in the portfolio.
+    - dates: list of dates corresponding to the time steps.
+
+    Returns:
+    - A Plotly area plot.
+    """
+
+    fig = go.Figure()
+
+    for i, stock_label in enumerate(stock_labels):
+        fig.add_trace(go.Scatter(x=dates, y=[ow[i] for ow in optimal_weights],
+                                 mode='lines', stackgroup='one', name=stock_label))
+
+    fig.update_layout(title='Optimal Portfolio Weights Over Time', 
+                      xaxis_title='Date', yaxis_title='Portfolio Weight')
 
     return fig
