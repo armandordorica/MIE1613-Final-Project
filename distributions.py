@@ -70,7 +70,7 @@ def get_capped_df_by_categorical_cdf(input_df, category_var,cap_pct=0.90):
     return input_df[input_df[category_var].isin(list(temp_df[category_var].unique()))]
     
     
-def get_confidence_interval(input_df, variable_name, conf_interval=95): 
+def get_confidence_interval(input_df, variable_name, title= '', conf_interval=95): 
     cdf_df = get_cdf_df(input_df, variable_name)
     mean = np.mean(input_df[variable_name])
 
@@ -90,7 +90,12 @@ def get_confidence_interval(input_df, variable_name, conf_interval=95):
 
     plt.axvline(x = np.round(high_bound,4), color = 'b', ls='--', label = f'High bound {np.round(high_bound,4)}') 
     plt.xlabel(f"Values of {variable_name}")
-    plt.title(f"Distribution of {variable_name} with confidence interval bounds of {conf_interval}%", fontsize=20)
+    
+    if title == '':
+        title = f"Distribution of {variable_name} with confidence interval bounds of {conf_interval}%"
+    else: 
+        pass
+    plt.title(title, fontsize=20)
     plt.legend()
     plt.show()
     
