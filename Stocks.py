@@ -41,11 +41,12 @@ class Stock:
         yf.pdr_override()
 
         try:    
-            print("data from alpaca")
-            self.ticker_data = self.get_ticker_data_alpaca()    
+            print("Pulling from yahoo")
+            self.ticker_data = self.get_data_yahoo()    
         except: 
-            print("Data from alpaca not available, pulling from yahoo")
-            self.ticker_data = self.get_data_yahoo()
+            print("Data from Yahoo not available, pulling data from alpaca")
+            self.ticker_data = self.get_ticker_data_alpaca()
+            
         
         self.ticker_data['ticker'] = ticker
         self.ticker_data['pct_change'] = self.ticker_data['Close'].pct_change()
