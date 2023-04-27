@@ -11,6 +11,12 @@ from scipy.stats import expon
 from scipy.stats import lognorm
 
 
+from scipy.stats import  norm
+
+
+
+
+
 
 def generate_qq_plot_normal(data, title='QQ Plot', label='input_data'):
     # Calculate the z-scores of the sorted input data
@@ -152,6 +158,15 @@ def fit_log_normal(data, plot_title=''):
     return pdf_fitted
 
 
+
+def get_fitted_pdf_normal(data): 
+    mu, sigma = np.mean(data), np.std(data)
+    fitted_normal = norm(loc=mu, scale=sigma)
+    x_range = np.linspace(min(data), max(data), 1000)
+    pdf_fitted = fitted_normal.pdf(x_range)
+    return pdf_fitted
+
+
 def get_fitted_pdf_log_normal(data, plot_title=''): 
     # Fit a lognormal distribution to your data
     shape, loc, scale = lognorm.fit(data)
@@ -225,3 +240,24 @@ def estimate_pdf(data):
     pdf_estimation = kde.evaluate(x_range)
     
     return pdf_estimation
+
+
+
+def rmse(y_true, y_pred):
+    """
+    Compute the Root Mean Squared Error (RMSE) between the true values and predicted values.
+
+    Parameters:
+    y_true (array-like): The true values.
+    y_pred (array-like): The predicted values.
+
+    Returns:
+    float: The RMSE value.
+    """
+    y_true = np.asarray(y_true)
+    y_pred = np.asarray(y_pred)
+    
+    mse = np.mean((y_true - y_pred) ** 2)
+    rmse = np.sqrt(mse)
+    
+    return rmse

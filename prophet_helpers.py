@@ -13,7 +13,6 @@ def plot_prediction(input_df, ticker='QQQ', test_period=30):
     future = model.make_future_dataframe(periods=test_period)
     forecast = model.predict(future)
 
-
     # Preparing data
     observed_data = data.copy()
     observed_data['ds'] = pd.to_datetime(data['ds'])  # Convert to datetime format
